@@ -112,6 +112,7 @@ public class WriteMailClient extends MailClient {
 			MailBody mailBody=new MailBody(ciphertext, ivParameterSpec1.getIV(), ivParameterSpec2.getIV(), cipherSecretKey);
 			String csv=mailBody.toCSV();
 			
+			System.out.println("---->"+ciphertextStr+"  "+csv);
         	MimeMessage mimeMessage = MailHelper.createMimeMessage(reciever, ciphersubjectStr, ciphertextStr+"  "+csv);
         	MailWritter.sendMessage(service, "me", mimeMessage);
         	

@@ -88,34 +88,21 @@ public class ReadMailClient extends MailClient {
 	    Integer answer = Integer.parseInt(answerStr);
 	    
 		MimeMessage chosenMessage = mimeMessages.get(answer);
-	    
-        //TODO: Decrypt a message and decompress it. The private key is stored in a file.
-		Cipher aesCipherDec = Cipher.getInstance("AES/CBC/PKCS5Padding");
-		SecretKey secretKey = new SecretKeySpec(JavaUtils.getBytesFromFile(KEY_FILE), "AES");
+	    String content=chosenMessage.getContent().toString();
+	    String[] csv=content.split("\\s\\s");
+	    System.out.println("csv: "+csv[1]);
+		MailBody mailBody=new MailBody(csv[1]);
+		byte[] cipherSecretKey=mailBody.getEncKeyBytes();
 		
-		
-		byte[] iv1 = JavaUtils.getBytesFromFile(IV1_FILE);
-		IvParameterSpec ivParameterSpec1 = new IvParameterSpec(iv1);
-		aesCipherDec.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec1);
-		
-		String str = MailHelper.getText(chosenMessage);
-		//byte[] bodyEnc = Base64.decode(str);
-		
-		//String receivedBodyTxt = new String(aesCipherDec.doFinal(bodyEnc));
-		//String decompressedBodyText = GzipUtil.decompress(Base64.decode(receivedBodyTxt));
-		//System.out.println("Body text: " + decompressedBodyText);
-		
-		//String[] s=decompressedBodyText.split("  ");
-		//MailBody mailBody=new MailBody(s[1]);
-		//byte[] cipherSecretKey=mailBody.getEncKeyBytes();
+		System.out.println("cipherSecretKey: " + Base64.encodeToString(cipherSecretKey));
 		
 		// ucitavanje KeyStore fajla
 		KeyStore keyStore = keyStoreReader.readKeyStore(KEY_STORE_FILE, KEY_STORE_PASS.toCharArray());
-						
+								
 		// preuzimanje sertifikata iz KeyStore-a za zeljeni alias
 		Certificate certificate = keyStoreReader.getCertificateFromKeyStore(keyStore, KEY_STORE_ALIAS);		
-		
-		
+				
+				
 		// preuzimanje privatnog kljuca iz KeyStore-a za zeljeni alias
 		PrivateKey privateKey = keyStoreReader.getPrivateKeyFromKeyStore(keyStore, KEY_STORE_ALIAS, KEY_STORE_PASS_FOR_PRIVATE_KEY.toCharArray());
 		System.out.println("Procitan privatni kljuc: " + privateKey);
@@ -126,10 +113,27 @@ public class ReadMailClient extends MailClient {
 		rsaCipherDec.init(Cipher.DECRYPT_MODE, privateKey);
 		
 		//dekriptovanje
-		//byte[] receivedTxt = rsaCipherDec.doFinal(cipherSecretKey);
-		//System.out.println("Primljeni text: " + new String(receivedTxt));
+		byte[] key = rsaCipherDec.doFinal(cipherSecretKey);
+		System.out.println(key.toString());
 		
-		byte[] iv2 = JavaUtils.getBytesFromFile(IV2_FILE);
+		
+        //TODO: Decrypt a message and decompress it. The private key is stored in a file.
+		Cipher aesCipherDec = Cipher.getInstance("AES/CBC/PKCS5Padding");
+		SecretKey secretKey = new SecretKeySpec(key, "AES");
+		
+		
+		byte[] iv1 = mailBody.getIV1Bytes();
+		IvParameterSpec ivParameterSpec1 = new IvParameterSpec(iv1);
+		aesCipherDec.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec1);
+		
+		String str = csv[0];
+		byte[] bodyEnc = Base64.decode(str);
+		
+		String receivedBodyTxt = new String(aesCipherDec.doFinal(bodyEnc));
+		String decompressedBodyText = GzipUtil.decompress(Base64.decode(receivedBodyTxt));
+		System.out.println("Body text: " + decompressedBodyText);
+		
+		byte[] iv2 = mailBody.getIV2Bytes();
 		IvParameterSpec ivParameterSpec2 = new IvParameterSpec(iv2);
 		//inicijalizacija za dekriptovanje
 		aesCipherDec.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec2);
