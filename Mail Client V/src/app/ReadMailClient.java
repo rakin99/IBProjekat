@@ -131,7 +131,7 @@ public class ReadMailClient extends MailClient {
 		
 		String receivedBodyTxt = new String(aesCipherDec.doFinal(bodyEnc));
 		String decompressedBodyText = GzipUtil.decompress(Base64.decode(receivedBodyTxt));
-		System.out.println("Body text: " + decompressedBodyText);
+		
 		
 		byte[] iv2 = mailBody.getIV2Bytes();
 		IvParameterSpec ivParameterSpec2 = new IvParameterSpec(iv2);
@@ -142,5 +142,6 @@ public class ReadMailClient extends MailClient {
 		String decryptedSubjectTxt = new String(aesCipherDec.doFinal(Base64.decode(chosenMessage.getSubject())));
 		String decompressedSubjectTxt = GzipUtil.decompress(Base64.decode(decryptedSubjectTxt));
 		System.out.println("Subject text: " + new String(decompressedSubjectTxt));
+		System.out.println("Body text: " + decompressedBodyText);
 	}
 }
