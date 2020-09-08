@@ -320,6 +320,7 @@ function getJks(email){
 	    headers: {'Authorization': 'Bearer ' + localStorage.getItem('jwt')}, // saljemo token u Authorization header-u gde ga serverska strana ocekuje
 	    success: function(data)
 	    {
+			console.log("Usepsno su stigli podaci!");
 			console.log(data);
 			var file = new File([data], email+".jks");
 			saveAs(file);

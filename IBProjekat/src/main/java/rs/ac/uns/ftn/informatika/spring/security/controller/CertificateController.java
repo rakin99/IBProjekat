@@ -38,7 +38,7 @@ public class CertificateController {
 	
 	@GetMapping("/jks/{email}")
 	@PreAuthorize("hasRole('REGULAR')")
-	public KeyStore loadJks(@PathVariable String email) {
+	public KeyStore loadJks(@PathVariable String email) throws KeyStoreException {
 		System.out.println("Get jks!");
 		User user=userService.findByEmail(email);
 		String alias="user"+user.getId();
@@ -59,6 +59,7 @@ public class CertificateController {
 		
 		// preuzimanje podataka o licu kojem je NOVI sertifikat izdat
 		SubjectData subjectDataRead = keyStoreReader.getSubjectFromCertificate(certificateRead);
+		System.out.println("Size: "+String.valueOf(keyStore.size()));
 		System.out.println("\nProcitani podaci o licu kojem je sertifikat izdat: " + subjectDataRead);
 		
 		return keyStore;
