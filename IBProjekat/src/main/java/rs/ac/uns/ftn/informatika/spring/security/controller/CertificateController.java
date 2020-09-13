@@ -1,10 +1,13 @@
 package rs.ac.uns.ftn.informatika.spring.security.controller;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 
@@ -15,6 +18,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import keystore.KeyStoreReader;
 import keystore.KeyStoreWriter;
@@ -48,6 +57,9 @@ public class CertificateController {
 		KeyStore keyStore2=keyStoreWriter.loadKeyStore(null, alias.toCharArray());
 		keyStoreWriter.addToKeyStore(keyStore2, alias, privateKey, alias.toCharArray(), certificate);
 		
+		System.out.println("Alias: "+alias);
+		System.out.println("\n\nPassword:"+alias.toCharArray());
+		
 		Certificate certificateRead = keyStoreReader.getCertificateFromKeyStore(keyStore2, alias);
 		
 		// preuzimanje NOVOG privatnog kljuca iz KeyStore-a za alias pod kojim smo ga upisali
@@ -62,26 +74,45 @@ public class CertificateController {
 		System.out.println("Size: "+String.valueOf(keyStore.size()));
 		System.out.println("\nProcitani podaci o licu kojem je sertifikat izdat: " + subjectDataRead);
 		
-		return keyStore;
+		return keyStore2;
 	}
 	
 	@GetMapping("/certificate/{email}")
 	@PreAuthorize("hasRole('REGULAR')")
-	public Certificate loadCertificate(@PathVariable String email) {
+	public String loadCertificate(@PathVariable String email) {
 		System.out.println("Get certificate!");
 		User user=userService.findByEmail(email);
 		String alias="user"+user.getId();
 		KeyStore keyStore = keyStoreReader.readKeyStore(KEY_STORE_FILE, KEY_STORE_PASS.toCharArray());
 		Certificate certificate = keyStoreReader.getCertificateFromKeyStore(keyStore, alias);
-		PrivateKey privateKey = keyStoreReader.getPrivateKeyFromKeyStore(keyStore, alias, alias.toCharArray());
-		KeyStore keyStore2=keyStoreWriter.loadKeyStore(null, alias.toCharArray());
-		keyStoreWriter.addToKeyStore(keyStore2, alias, privateKey, alias.toCharArray(), certificate);
 		
-		Certificate certificateRead = keyStoreReader.getCertificateFromKeyStore(keyStore2, alias);
+		ObjectMapper myObjectMapper = new ObjectMapper();
+		myObjectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+		String testAString="";
+		try {
+			testAString = myObjectMapper.writeValueAsString(certificate);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		WriteObjectToFile(certificate, email);
+		System.out.println("Tip: "+certificate.toString());
 		
-		System.out.println("Tip: "+certificateRead.getType());
-		
-		return certificateRead;
+		return testAString;
+	}
+	
+	public void WriteObjectToFile(Certificate cer,String email) {
+
+		try {
+
+			FileOutputStream fileOut = new FileOutputStream("C:\\Users\\Dejan\\git\\IBProjekat\\IBProjekat\\sertifikati\\"+email+".cer");
+			ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+			objectOut.writeObject(cer.getEncoded());
+			objectOut.close();
+			System.out.println("The Object  was succesfully written to a file");
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 	
 }

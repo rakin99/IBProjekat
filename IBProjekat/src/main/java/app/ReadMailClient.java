@@ -32,6 +32,7 @@ import com.google.api.services.gmail.model.Message;
 import keystore.KeyStoreReader;
 import rs.ac.uns.ftn.informatika.spring.security.model.MailBody;
 import rs.ac.uns.ftn.informatika.spring.security.model.MessageDTO;
+import rs.ac.uns.ftn.informatika.spring.security.model.User;
 import support.MailHelper;
 import support.MailReader;
 import util.Base64;
@@ -42,18 +43,26 @@ public class ReadMailClient extends MailClient {
 	public static long PAGE_SIZE = 5;
 	public static boolean ONLY_FIRST_PAGE = true;
 	
-	private static final String KEY_STORE_FILE = "./data/userb.jks";
-	private static final String KEY_STORE_PASS = "0000";
-	private static final String KEY_STORE_ALIAS = "pera";
-	private static final String KEY_STORE_PASS_FOR_PRIVATE_KEY = "0000";
+	//private static final String KEY_STORE_FILE = "./data/userb.jks";
+	//private static final String KEY_STORE_PASS = "0000";
+	//private static final String keyStoreAlias = "pera";
+	//private static final String keyStorePassForPrivateKey = "0000";
 	
 	private static final String KEY_FILE = "./data/session.key";
 	private static final String IV1_FILE = "./data/iv1.bin";
 	private static final String IV2_FILE = "./data/iv2.bin";
 	private static KeyStoreReader keyStoreReader = new KeyStoreReader();
 	
-	public static List<MessageDTO> readMessage() throws IOException, InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException, MessagingException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchProviderException {
-        // Build a new authorized API client service.
+	public static List<MessageDTO> readMessage(User u) throws IOException, InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException, MessagingException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchProviderException {
+        
+		System.out.println("Email of user: "+u.getUsername());
+		
+		String keyStorePass = u.getUsername();
+		String keyStoreAlias = u.getUsername();
+		String keyStorePassForPrivateKey = u.getUsername();
+		String keyStoreFile = "./data/"+u.getUsername()+".jks";
+		
+		// Build a new authorized API client service.
         List<MessageDTO> mess=new ArrayList<MessageDTO>();
 		
 		Gmail service = getGmailService();
@@ -97,6 +106,7 @@ public class ReadMailClient extends MailClient {
         	String email=chosenMessage.getHeader("From", null);
         	String content=chosenMessage.getContent().toString();
         	try {
+        		System.out.println("\n\n\t------->Pokusavam da desifrujem poruku!<---------------");
         		String[] csv=content.split("\\s\\s");
         	    System.out.println("csv: "+csv[1]);
         		MailBody mailBody=new MailBody(csv[1]);
@@ -105,14 +115,14 @@ public class ReadMailClient extends MailClient {
         		System.out.println("cipherSecretKey: " + Base64.encodeToString(cipherSecretKey));
         		
         		// ucitavanje KeyStore fajla
-        		KeyStore keyStore = keyStoreReader.readKeyStore(KEY_STORE_FILE, KEY_STORE_PASS.toCharArray());
+        		KeyStore keyStore = keyStoreReader.readKeyStore(keyStoreFile, keyStorePass.toCharArray());
         								
         		// preuzimanje sertifikata iz KeyStore-a za zeljeni alias
-        		Certificate certificate = keyStoreReader.getCertificateFromKeyStore(keyStore, KEY_STORE_ALIAS);		
+        		Certificate certificate = keyStoreReader.getCertificateFromKeyStore(keyStore, keyStoreAlias);		
         				
         				
         		// preuzimanje privatnog kljuca iz KeyStore-a za zeljeni alias
-        		PrivateKey privateKey = keyStoreReader.getPrivateKeyFromKeyStore(keyStore, KEY_STORE_ALIAS, KEY_STORE_PASS_FOR_PRIVATE_KEY.toCharArray());
+        		PrivateKey privateKey = keyStoreReader.getPrivateKeyFromKeyStore(keyStore, keyStoreAlias, keyStorePassForPrivateKey.toCharArray());
         		System.out.println("Procitan privatni kljuc: " + privateKey);
         		
         		Cipher rsaCipherDec = Cipher.getInstance("RSA/ECB/PKCS1Padding");

@@ -65,8 +65,8 @@ function register() {
 	
 	// kreiramo JavaScript objekat sa podacima koje je korisnik uneo u input polja
 	var user = {
-		'email' : $('#emailRegister').val(),
-		'password': $('#passwordRegister').val()
+		'email' : "mika@gmail.com",
+		'password': "123"
 	}
 	
 	// podatke na backend uvek saljemo kao JSON string
@@ -163,7 +163,7 @@ function sendMessage() {
 	var messageJSON = JSON.stringify(message);
 
 	$.ajax({
-	    url : '/api/message/send',
+	    url : '/api/message/send/'+username,
 		type: 'POST',
 		data : messageJSON,
 	    contentType:"application/json; charset=utf-8",
@@ -266,6 +266,7 @@ function getAllUsers() {
 						'<td>' + users[it].username + '</td>' + 
 						'<td>' + authoritiesString + '</td>' +
 						'<td>' + checked + '</td>' +
+						'<td> <a href="C:\Users\Dejan\git\IBProjekat\IBProjekat\data\test.jks" target="_blank">Download</a> </td>'+
 						'<td>' + '<button type="button" onclick="getCertificate(\''+ users[it].username +'\')" class="btn btn-primary">Download certificate</button>' + '</td>' +
 					'</tr>'
 							)	
@@ -347,7 +348,7 @@ function getMessages() {
 	var meessagesTable = $('#messagesTable');
 	
 	$.ajax({
-	    url : '/api/message/all',
+	    url : '/api/message/all/'+username,
 	    type: 'GET',
 	    contentType:"application/json; charset=utf-8",
 	    dataType:"json",

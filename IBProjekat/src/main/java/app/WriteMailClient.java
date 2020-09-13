@@ -20,6 +20,7 @@ import com.google.api.services.gmail.Gmail;
 
 import keystore.KeyStoreReader;
 import rs.ac.uns.ftn.informatika.spring.security.model.MailBody;
+import rs.ac.uns.ftn.informatika.spring.security.model.User;
 import util.Base64;
 import util.GzipUtil;
 import util.IVHelper;
@@ -31,13 +32,20 @@ public class WriteMailClient extends MailClient {
 	private static final String KEY_FILE = "./data/session.key";
 	private static final String IV1_FILE = "./data/iv1.bin";
 	private static final String IV2_FILE = "./data/iv2.bin";
-	private static final String KEY_STORE_FILE = "./data/userb.jks";
-	private static final String KEY_STORE_PASS = "0000";
-	private static final String KEY_STORE_ALIAS = "pera";
+//	private static final String keyStoreFile = "./data/userb.jks";
+//	private static final String keyStorePass = "0000";
+//	private static final String keyStoreAlias = "pera";
 
 	private static KeyStoreReader keyStoreReader = new KeyStoreReader();
 	
-	public static boolean sendMessage(String reciever,String subject,String body) {
+	public static boolean sendMessage(String reciever,String subject,String body,User u) {
+		
+		System.out.println("Email of user: "+reciever);
+		
+		String keyStorePass = reciever;
+		String keyStoreAlias = reciever;
+		String keyStoreFile = "./data/"+reciever+".jks";
+		
 		
         try {
         	Gmail service = getGmailService();
@@ -71,10 +79,10 @@ public class WriteMailClient extends MailClient {
 			System.out.println("Kriptovan subject: " + ciphersubjectStr);
 							
 			// ucitavanje KeyStore fajla
-			KeyStore keyStore = keyStoreReader.readKeyStore(KEY_STORE_FILE, KEY_STORE_PASS.toCharArray());
+			KeyStore keyStore = keyStoreReader.readKeyStore(keyStoreFile, keyStorePass.toCharArray());
 				
 			// preuzimanje sertifikata iz KeyStore-a za zeljeni alias
-			Certificate certificate = keyStoreReader.getCertificateFromKeyStore(keyStore, KEY_STORE_ALIAS);			
+			Certificate certificate = keyStoreReader.getCertificateFromKeyStore(keyStore, keyStoreAlias);			
 				
 			// preuzimanje javnog kljuca iz ucitanog sertifikata
 			PublicKey publicKey = keyStoreReader.getPublicKeyFromCertificate(certificate);
