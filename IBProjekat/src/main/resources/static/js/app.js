@@ -155,6 +155,7 @@ function sendMessage() {
 
 	var message = {
 		'emailAddress' : emailAddress.val(),
+		'sender' : username,
 		'subject' : subject.val(),
 		'content': content.val()
 	}
@@ -163,7 +164,7 @@ function sendMessage() {
 	var messageJSON = JSON.stringify(message);
 
 	$.ajax({
-	    url : '/api/message/send/'+username,
+	    url : '/api/message/send',
 		type: 'POST',
 		data : messageJSON,
 	    contentType:"application/json; charset=utf-8",
@@ -357,15 +358,20 @@ function getMessages() {
 	    {
 	    	meessagesTable.find('tr:gt(1)').remove();
 	    	meessagesTable.show();
-	    	var messages = data;
-			for (it in messages) {
-				meessagesTable.append(
-					'<tr>' +  
-						'<td>' + '<input readonly="false" type="email" class="form-control" value="'+ messages[it].emailAddress +'">' + '</td>' + 
-						'<td>' + '<input readonly="false" type="text" class="form-control" value="'+ messages[it].subject +'">' + '</td>' +
-						'<td>' + '<textarea readonly="false" class="form-control">'+ messages[it].content +'</textarea>' + '</td>' +
-					'</tr>'
-							)	
+			var messages = data;
+			if(messages.length===0){
+				$('#messagesForm').append('<h2>Nemate jos ni jednu poruku!</h2>');
+				meessagesTable.remove();
+			}else{
+				for (it in messages) {
+					meessagesTable.append(
+						'<tr>' +  
+							'<td>' + '<input readonly="false" type="email" class="form-control" value="'+ messages[it].emailAddress +'">' + '</td>' + 
+							'<td>' + '<input readonly="false" type="text" class="form-control" value="'+ messages[it].subject +'">' + '</td>' +
+							'<td>' + '<textarea readonly="false" class="form-control">'+ messages[it].content +'</textarea>' + '</td>' +
+						'</tr>'
+								)	
+				}
 			}
 	    	
 	    	console.log('Get Messages - Response:');

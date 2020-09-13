@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?><poruke>
+	<poruka id="1" posiljaoc="rakindejan@gmail.com" primalac="pantelijacappone@gmail.com">
+		<subject>Hej</subject>
+		<body>Hej, sta radis?</body>
+	</poruka>
+<poruka posiljaoc="rakindejan@gmail.com" primalac="pantelijacappone@gmail.com"><subject>Hej</subject><body>Hej, sta radis?123</body></poruka><poruka posiljaoc="pantelijacappone@gmail.com" primalac="rakindejan@gmail.com"><subject>Hej, gde si</subject><body>E si mi dobar? Sta radis?</body></poruka></poruke>

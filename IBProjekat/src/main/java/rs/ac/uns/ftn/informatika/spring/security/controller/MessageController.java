@@ -30,9 +30,11 @@ import org.springframework.web.bind.annotation.RestController;
 import app.ReadMailClient;
 import app.WriteMailClient;
 import rs.ac.uns.ftn.informatika.spring.security.model.MessageDTO;
+import rs.ac.uns.ftn.informatika.spring.security.model.Messages;
 import rs.ac.uns.ftn.informatika.spring.security.model.User;
 import rs.ac.uns.ftn.informatika.spring.security.model.UserRequest;
 import rs.ac.uns.ftn.informatika.spring.security.service.UserService;
+import xml.util.Util;
 
 //Kontroler zaduzen za rad sa porukama
 @RestController
@@ -42,18 +44,19 @@ public class MessageController {
 	@Autowired
 	private UserService userService;
 	
-	@PostMapping(value = "/message/send/{email}")
+	@PostMapping(value = "/message/send")
 	@PreAuthorize("hasRole('REGULAR')")
-	public ResponseEntity<Map<String, String>> sendMessage(@RequestBody MessageDTO messageDTO,@PathVariable String email) {
+	public ResponseEntity<Map<String, String>> sendMessage(@RequestBody MessageDTO messageDTO) {
 		
+		System.out.println("\n\n\t----->Saljem poruku.<------------------");
 		Map<String, String> result = new HashMap<>();
 		String r="";
-		User user = this.userService.findByEmail(email);
-		boolean messageSend=WriteMailClient.sendMessage(messageDTO.getEmailAddress(), messageDTO.getSubject(), messageDTO.getContent(),user);
-		if(messageSend) {
+		
+		try {
+			Util.newMessage(messageDTO);
 			r="The message was sent successfully!";
 			result.put("r", r);
-		}else if(!messageSend) {
+		} catch (Exception e) {
 			r="Error sending message!";
 			result.put("r", r);
 			return ResponseEntity.badRequest().body(result);
@@ -64,8 +67,7 @@ public class MessageController {
 	@GetMapping("/message/all/{email}")
 	@PreAuthorize("hasRole('REGULAR')")
 	public List<MessageDTO> loadAllMessage(@PathVariable String email) throws InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchProviderException, IOException, MessagingException {
-		User user = this.userService.findByEmail(email);
-		List<MessageDTO> messages=ReadMailClient.readMessage(user);
-		return messages;
+		Messages messages = Util.loadMessages(email);
+		return messages.getMessages();
 	}
 }

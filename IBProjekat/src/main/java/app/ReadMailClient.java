@@ -42,7 +42,7 @@ import util.GzipUtil;
 
 public class ReadMailClient extends MailClient {
 
-	public static long PAGE_SIZE = 1;
+	public static long PAGE_SIZE = 5;
 	public static boolean ONLY_FIRST_PAGE = true;
 	
 	//private static final String KEY_STORE_FILE = "./data/userb.jks";
