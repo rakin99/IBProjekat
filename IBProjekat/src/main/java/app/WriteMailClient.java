@@ -21,6 +21,7 @@ import com.google.api.services.gmail.Gmail;
 import keystore.KeyStoreReader;
 import rs.ac.uns.ftn.informatika.spring.security.model.MailBody;
 import rs.ac.uns.ftn.informatika.spring.security.model.User;
+import signature.SignatureManager;
 import util.Base64;
 import util.GzipUtil;
 import util.IVHelper;
@@ -38,13 +39,15 @@ public class WriteMailClient extends MailClient {
 
 	private static KeyStoreReader keyStoreReader = new KeyStoreReader();
 	
+	private static SignatureManager signatureManager = new SignatureManager();
+	
 	public static boolean sendMessage(String reciever,String subject,String body,User u) {
 		
 		System.out.println("Email of user: "+reciever);
 		
-		String keyStorePass = reciever;
+		String keyStorePass = u.getUsername();
 		String keyStoreAlias = reciever;
-		String keyStoreFile = "./data/"+reciever+".jks";
+		String keyStoreFile = "./data/"+u.getUsername()+".jks";
 		
 		
         try {
@@ -62,10 +65,8 @@ public class WriteMailClient extends MailClient {
 			Cipher desCipherEnc = Cipher.getInstance("DES/ECB/PKCS5Padding");
 			
 			//inicijalizacija za sifrovanje 
-			IvParameterSpec ivParameterSpec1 = IVHelper.createIV();
+			IvParameterSpec ivParameterSpec1 = IVHelper.createIV(); //Nije potrebno
 			desCipherEnc.init(Cipher.ENCRYPT_MODE, secretKey);
-			
-			//Ovde bi se trebala potpisati poruka
 			
 			//sifrovanje
 			byte[] ciphertext = desCipherEnc.doFinal(compressedBody.getBytes());
@@ -74,7 +75,7 @@ public class WriteMailClient extends MailClient {
 			
 			
 			//inicijalizacija za sifrovanje 
-			IvParameterSpec ivParameterSpec2 = IVHelper.createIV();
+			IvParameterSpec ivParameterSpec2 = IVHelper.createIV();  //Nije potrebno ali sam ga ostavio jer mi MailBody nije radilo kako treba.
 			desCipherEnc.init(Cipher.ENCRYPT_MODE, secretKey);
 			
 			byte[] ciphersubject = desCipherEnc.doFinal(compressedSubject.getBytes());
@@ -90,6 +91,12 @@ public class WriteMailClient extends MailClient {
 			// preuzimanje javnog kljuca iz ucitanog sertifikata
 			PublicKey publicKey = keyStoreReader.getPublicKeyFromCertificate(certificate);
 			System.out.println("\nProcitan javni kljuc iz sertifikata: " + publicKey);
+			
+			//preuzimanje privatnog kljuca
+			PrivateKey privateKey = keyStoreReader.getPrivateKeyFromKeyStore(keyStore, u.getUsername(), u.getUsername().toCharArray());
+			
+			//Potpisujemo digitalnim potpisom sadrzaj poruke
+			byte[] signature = signatureManager.sign(compressedBody.getBytes(), privateKey);
 			
 			//kriptovanje poruke javnim kljucem
 			Cipher rsaCipherEnc = Cipher.getInstance("RSA/ECB/PKCS1Padding");
@@ -108,7 +115,7 @@ public class WriteMailClient extends MailClient {
 //			JavaUtils.writeBytesToFilename(IV1_FILE, ivParameterSpec1.getIV());
 //			JavaUtils.writeBytesToFilename(IV2_FILE, ivParameterSpec2.getIV());
 			
-			MailBody mailBody=new MailBody(ciphertext,ivParameterSpec1.getIV(),ivParameterSpec2.getIV(), cipherSecretKey);
+			MailBody mailBody=new MailBody(ciphertext,ivParameterSpec1.getIV(),ivParameterSpec2.getIV(), cipherSecretKey,signature);
 			String csv=mailBody.toCSV();
 			
 			System.out.println("---->"+ciphertextStr+"  "+csv);

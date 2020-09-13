@@ -9,6 +9,7 @@ import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import keystore.KeyStoreReader;
 import rs.ac.uns.ftn.informatika.spring.security.model.MailBody;
 import rs.ac.uns.ftn.informatika.spring.security.model.MessageDTO;
 import rs.ac.uns.ftn.informatika.spring.security.model.User;
+import signature.SignatureManager;
 import support.MailHelper;
 import support.MailReader;
 import util.Base64;
@@ -51,6 +53,8 @@ public class ReadMailClient extends MailClient {
 	private static final String KEY_FILE = "./data/session.key";
 	private static final String IV1_FILE = "./data/iv1.bin";
 	private static final String IV2_FILE = "./data/iv2.bin";
+	
+	private static SignatureManager signatureManager = new SignatureManager();
 	private static KeyStoreReader keyStoreReader = new KeyStoreReader();
 	
 	public static List<MessageDTO> readMessage(User u) throws IOException, InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException, MessagingException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchProviderException {
@@ -108,9 +112,6 @@ public class ReadMailClient extends MailClient {
         	try {
         		System.out.println("\n\n\t------->Pokusavam da desifrujem poruku!<---------------");
         		String[] csv=content.split("\\s\\s");
-        		for (String s : csv) {
-					System.out.println("csv split------------"+s);
-				}
         	    System.out.println("csv: "+csv[1]);
         		MailBody mailBody=new MailBody(csv[1]);
         		byte[] cipherSecretKey=mailBody.getEncKeyBytes();
@@ -121,12 +122,17 @@ public class ReadMailClient extends MailClient {
         		KeyStore keyStore = keyStoreReader.readKeyStore(keyStoreFile, keyStorePass.toCharArray());
         								
         		// preuzimanje sertifikata iz KeyStore-a za zeljeni alias
-        		Certificate certificate = keyStoreReader.getCertificateFromKeyStore(keyStore, keyStoreAlias);		
+        		Certificate certificate = keyStoreReader.getCertificateFromKeyStore(keyStore, keyStoreAlias);
+        		Certificate certificate2 = keyStoreReader.getCertificateFromKeyStore(keyStore, email);
         				
         				
         		// preuzimanje privatnog kljuca iz KeyStore-a za zeljeni alias
         		PrivateKey privateKey = keyStoreReader.getPrivateKeyFromKeyStore(keyStore, keyStoreAlias, keyStorePassForPrivateKey.toCharArray());
         		System.out.println("Procitan privatni kljuc: " + privateKey);
+        		
+        		// preuzimanje javnog kljuca iz keystore-a
+        		PublicKey publicKey = keyStoreReader.getPublicKeyFromCertificate(certificate2);
+        		System.out.println("Procitan javni kljuc: " + publicKey);
         		
         		Cipher rsaCipherDec = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         		//inicijalizacija za dekriptovanje
@@ -151,6 +157,19 @@ public class ReadMailClient extends MailClient {
         		byte[] bodyEnc = Base64.decode(str);
         		
         		String receivedBodyTxt = new String(desCipherDec.doFinal(bodyEnc));
+        		
+        		System.out.println("\n\n\treceivedBodyTxt"+receivedBodyTxt);
+        		
+        		//provera digitalnog potpisa
+        		//-----------------------------------
+        		byte[] signature = mailBody.getSignatureBytes();
+        		byte[] data = receivedBodyTxt.getBytes();
+        		System.out.println("Provera potpisa -> " + signatureManager.verify(data, signature, publicKey)); // ispravan je potpis
+        		// malo izmenimo podatke: promenimo samo jedan bajt
+        		data[0] = (byte) 0xFA;
+        		System.out.println("Provera potpisa -> " + signatureManager.verify(data, signature, publicKey)); // potpis nije ispravan (menjani su originalni podaci)
+        		//-----------------------------------------
+        		
         		String decompressedBodyText = GzipUtil.decompress(Base64.decode(receivedBodyTxt));
         		
         		
@@ -175,14 +194,13 @@ public class ReadMailClient extends MailClient {
         			mess.add(messageDTO);
         		}
         	}catch (Exception e) {
-        		e.printStackTrace();
-//        		MessageDTO messageDTO= new MessageDTO();
-//        		messageDTO.setContent(MailHelper.getText(chosenMessage));
-//        		messageDTO.setSubject(chosenMessage.getSubject());
-//        		messageDTO.setEmailAddress(email);
-//        		if(!messageDTO.getEmailAddress().contains("<notification@facebookmail.com>")) {
-//        			mess.add(messageDTO);
-//        		}
+        		MessageDTO messageDTO= new MessageDTO();
+        		messageDTO.setContent(MailHelper.getText(chosenMessage));
+        		messageDTO.setSubject(chosenMessage.getSubject());
+        		messageDTO.setEmailAddress(email);
+        		if(!messageDTO.getEmailAddress().contains("<notification@facebookmail.com>")) {
+        			mess.add(messageDTO);
+        		}
 			}
 		}
 	    return mess;
