@@ -40,7 +40,7 @@ import util.GzipUtil;
 
 public class ReadMailClient extends MailClient {
 
-	public static long PAGE_SIZE = 5;
+	public static long PAGE_SIZE = 1;
 	public static boolean ONLY_FIRST_PAGE = true;
 	
 	//private static final String KEY_STORE_FILE = "./data/userb.jks";
@@ -108,6 +108,9 @@ public class ReadMailClient extends MailClient {
         	try {
         		System.out.println("\n\n\t------->Pokusavam da desifrujem poruku!<---------------");
         		String[] csv=content.split("\\s\\s");
+        		for (String s : csv) {
+					System.out.println("csv split------------"+s);
+				}
         	    System.out.println("csv: "+csv[1]);
         		MailBody mailBody=new MailBody(csv[1]);
         		byte[] cipherSecretKey=mailBody.getEncKeyBytes();
@@ -136,28 +139,28 @@ public class ReadMailClient extends MailClient {
         		
         		
                 //TODO: Decrypt a message and decompress it. The private key is stored in a file.
-        		Cipher aesCipherDec = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        		SecretKey secretKey = new SecretKeySpec(key, "AES");
+        		Cipher desCipherDec = Cipher.getInstance("DES/ECB/PKCS5Padding");
+        		SecretKey secretKey = new SecretKeySpec(key, "DES");
         		
         		
-        		byte[] iv1 = mailBody.getIV1Bytes();
-        		IvParameterSpec ivParameterSpec1 = new IvParameterSpec(iv1);
-        		aesCipherDec.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec1);
+//        		byte[] iv1 = mailBody.getIV1Bytes();
+//        		IvParameterSpec ivParameterSpec1 = new IvParameterSpec(iv1);
+        		desCipherDec.init(Cipher.DECRYPT_MODE, secretKey);
         		
         		String str = csv[0];
         		byte[] bodyEnc = Base64.decode(str);
         		
-        		String receivedBodyTxt = new String(aesCipherDec.doFinal(bodyEnc));
+        		String receivedBodyTxt = new String(desCipherDec.doFinal(bodyEnc));
         		String decompressedBodyText = GzipUtil.decompress(Base64.decode(receivedBodyTxt));
         		
         		
-        		byte[] iv2 = mailBody.getIV2Bytes();
-        		IvParameterSpec ivParameterSpec2 = new IvParameterSpec(iv2);
+//        		byte[] iv2 = mailBody.getIV2Bytes();
+//        		IvParameterSpec ivParameterSpec2 = new IvParameterSpec(iv2);
         		//inicijalizacija za dekriptovanje
-        		aesCipherDec.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec2);
+        		desCipherDec.init(Cipher.DECRYPT_MODE, secretKey);
         		
         		//dekompresovanje i dekriptovanje subject-a
-        		String decryptedSubjectTxt = new String(aesCipherDec.doFinal(Base64.decode(chosenMessage.getSubject())));
+        		String decryptedSubjectTxt = new String(desCipherDec.doFinal(Base64.decode(chosenMessage.getSubject())));
         		String decompressedSubjectTxt = GzipUtil.decompress(Base64.decode(decryptedSubjectTxt));
         		
         		System.out.println("Subject text: " + new String(decompressedSubjectTxt));
@@ -172,13 +175,14 @@ public class ReadMailClient extends MailClient {
         			mess.add(messageDTO);
         		}
         	}catch (Exception e) {
-        		MessageDTO messageDTO= new MessageDTO();
-        		messageDTO.setContent(MailHelper.getText(chosenMessage));
-        		messageDTO.setSubject(chosenMessage.getSubject());
-        		messageDTO.setEmailAddress(email);
-        		if(!messageDTO.getEmailAddress().contains("<notification@facebookmail.com>")) {
-        			mess.add(messageDTO);
-        		}
+        		e.printStackTrace();
+//        		MessageDTO messageDTO= new MessageDTO();
+//        		messageDTO.setContent(MailHelper.getText(chosenMessage));
+//        		messageDTO.setSubject(chosenMessage.getSubject());
+//        		messageDTO.setEmailAddress(email);
+//        		if(!messageDTO.getEmailAddress().contains("<notification@facebookmail.com>")) {
+//        			mess.add(messageDTO);
+//        		}
 			}
 		}
 	    return mess;

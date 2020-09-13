@@ -54,27 +54,30 @@ public class WriteMailClient extends MailClient {
             String compressedSubject = Base64.encodeToString(GzipUtil.compress(subject));
             String compressedBody = Base64.encodeToString(GzipUtil.compress(body));
             
+            System.out.println("\n\ncompressedBody"+compressedBody);
+            
             //Key generation
-            KeyGenerator keyGen = KeyGenerator.getInstance("AES"); 
+            KeyGenerator keyGen = KeyGenerator.getInstance("DES"); 
 			SecretKey secretKey = keyGen.generateKey();
-			Cipher aesCipherEnc = Cipher.getInstance("AES/CBC/PKCS5Padding");
+			Cipher desCipherEnc = Cipher.getInstance("DES/ECB/PKCS5Padding");
 			
 			//inicijalizacija za sifrovanje 
 			IvParameterSpec ivParameterSpec1 = IVHelper.createIV();
-			aesCipherEnc.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec1);
+			desCipherEnc.init(Cipher.ENCRYPT_MODE, secretKey);
 			
+			//Ovde bi se trebala potpisati poruka
 			
 			//sifrovanje
-			byte[] ciphertext = aesCipherEnc.doFinal(compressedBody.getBytes());
+			byte[] ciphertext = desCipherEnc.doFinal(compressedBody.getBytes());
 			String ciphertextStr = Base64.encodeToString(ciphertext);
 			System.out.println("Kriptovan tekst: " + ciphertextStr);
 			
 			
 			//inicijalizacija za sifrovanje 
 			IvParameterSpec ivParameterSpec2 = IVHelper.createIV();
-			aesCipherEnc.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec2);
+			desCipherEnc.init(Cipher.ENCRYPT_MODE, secretKey);
 			
-			byte[] ciphersubject = aesCipherEnc.doFinal(compressedSubject.getBytes());
+			byte[] ciphersubject = desCipherEnc.doFinal(compressedSubject.getBytes());
 			String ciphersubjectStr = Base64.encodeToString(ciphersubject);
 			System.out.println("Kriptovan subject: " + ciphersubjectStr);
 							
@@ -102,10 +105,10 @@ public class WriteMailClient extends MailClient {
 			
 			//snimaju se bajtovi kljuca i IV.
 			JavaUtils.writeBytesToFilename(KEY_FILE, secretKey.getEncoded());
-			JavaUtils.writeBytesToFilename(IV1_FILE, ivParameterSpec1.getIV());
-			JavaUtils.writeBytesToFilename(IV2_FILE, ivParameterSpec2.getIV());
+//			JavaUtils.writeBytesToFilename(IV1_FILE, ivParameterSpec1.getIV());
+//			JavaUtils.writeBytesToFilename(IV2_FILE, ivParameterSpec2.getIV());
 			
-			MailBody mailBody=new MailBody(ciphertext, ivParameterSpec1.getIV(), ivParameterSpec2.getIV(), cipherSecretKey);
+			MailBody mailBody=new MailBody(ciphertext,ivParameterSpec1.getIV(),ivParameterSpec2.getIV(), cipherSecretKey);
 			String csv=mailBody.toCSV();
 			
 			System.out.println("---->"+ciphertextStr+"  "+csv);
