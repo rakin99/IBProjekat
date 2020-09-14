@@ -28,9 +28,9 @@ public class VerifySignatureEnveloped {
         org.apache.xml.security.Init.init();
     }
 	
-	public void testIt() {
+	public void testIt(String inFile) {
 		//ucitava se dokument
-		Document doc = loadDocument(IN_FILE);
+		Document doc = loadDocument(inFile);
 		
 		//proverava potpis
 		boolean res = verifySignature(doc);
@@ -95,9 +95,9 @@ public class VerifySignatureEnveloped {
 		} 
 	}
 	
-	public static void main(String[] args) {
-		VerifySignatureEnveloped verify = new VerifySignatureEnveloped();
-		verify.testIt();
-	}
+//	public static void main(String[] args) {
+//		VerifySignatureEnveloped verify = new VerifySignatureEnveloped();
+//		verify.testIt();
+//	}
 
 }

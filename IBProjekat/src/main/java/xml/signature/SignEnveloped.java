@@ -27,8 +27,8 @@ import org.w3c.dom.Element;
 //Potpisuje dokument, koristi se enveloped tip
 public class SignEnveloped {
 	
-	private static final String IN_FILE = "./data/univerzitet.xml";
-	private static final String OUT_FILE = "./data/univerzitet_signed1.xml";
+	//private static final String inFile = "./data/univerzitet.xml";
+	//private static final String outFile = "./data/univerzitet_signed1.xml";
 	private static final String KEY_STORE_FILE = "./data/primer.jks";
 	
   static {
@@ -37,22 +37,22 @@ public class SignEnveloped {
       org.apache.xml.security.Init.init();
   }
 	
-	public void testIt() {
+	public void testIt(String inFile,PrivateKey pk,Certificate cert, String outFile) {
 		//ucitava se dokument
-		Document doc = loadDocument(IN_FILE);
+		Document doc = loadDocument(inFile);
 		
 		//ucitava privatni kljuc koji ce biti iskoriscen za potpisivanje dokumenta
-		PrivateKey pk = readPrivateKey();
+//		PrivateKey pk = readPrivateKey();
 		
 		//ucitava sertifikat
-		Certificate cert = readCertificate();
+//		Certificate cert = readCertificate();
 		
 		//potpisuje
 		System.out.println("Signing....");
 		doc = signDocument(doc, pk, cert);
 		
 		//snima se dokument
-		saveDocument(doc, OUT_FILE);
+		saveDocument(doc, outFile);
 		System.out.println("Signing of document done");
 	}
 	
@@ -188,9 +188,9 @@ public class SignEnveloped {
 		}
 	}
 	
-	public static void main(String[] args) {
-		SignEnveloped sign = new SignEnveloped();
-		sign.testIt();
-	}
+//	public static void main(String[] args) {
+//		SignEnveloped sign = new SignEnveloped();
+//		sign.testIt();
+//	}
 
 }
