@@ -35,20 +35,21 @@ public class AsymmetricKeyDecryption {
 		org.apache.xml.security.Init.init();
 	}
 
-	public void testIt() {
+	public Document testIt(String inFile,PrivateKey pk,String outFile) {
 		// ucitava se dokument
-		Document doc = loadDocument(IN_FILE);
+		Document doc = loadDocument(inFile);
 
 		// ucitava se privatni kljuc
-		PrivateKey pk = readPrivateKey();
+		//PrivateKey pk = readPrivateKey();
 
-		// dekriptuje se dokument
+		// kriptuje se dokument
 		System.out.println("Decrypting....");
 		doc = decrypt(doc, pk);
 
 		// snima se dokument
-		saveDocument(doc, OUT_FILE);
-		System.out.println("Decrypting done");
+		//saveDocument(doc, outFile);
+		System.out.println("Encryption done");
+		return doc;
 	}
 
 	/**
@@ -145,8 +146,8 @@ public class AsymmetricKeyDecryption {
 		}
 	}
 
-	public static void main(String[] args) {
-		AsymmetricKeyDecryption decrypt = new AsymmetricKeyDecryption();
-		decrypt.testIt();
-	}
+//	public static void main(String[] args) {
+//		AsymmetricKeyDecryption decrypt = new AsymmetricKeyDecryption();
+//		decrypt.testIt();
+//	}
 }

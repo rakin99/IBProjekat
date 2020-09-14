@@ -18,6 +18,8 @@ import keystore.KeyStoreReader;
 import rs.ac.uns.ftn.informatika.spring.security.model.MessageDTO;
 import rs.ac.uns.ftn.informatika.spring.security.model.Messages;
 import rs.ac.uns.ftn.informatika.spring.security.model.User;
+import xml.crypto.AsymmetricKeyDecryption;
+import xml.crypto.AsymmetricKeyEncryption;
 import xml.signature.SignEnveloped;
 import xml.signature.VerifySignatureEnveloped;
 
@@ -87,16 +89,43 @@ public class Util {
 		//preuzimanje privatnog kljuca
 		PrivateKey privateKey = keyStoreReader.getPrivateKeyFromKeyStore(keyStore, messageDTO.getSender(), messageDTO.getSender().toCharArray());
         
+		//Potpisivanje dokumenta
 		SignEnveloped sign = new SignEnveloped();
         sign.testIt("./data/poruke.xml",privateKey,certificateSignature,"./data/poruke.xml");
+        
+        //preuzimanje sertifikata primaoca, za sifrovanje dokumenta
+        Certificate certificate = keyStoreReader.getCertificateFromKeyStore(keyStore, primalac);
+        
+        //Sifrovanje
+        AsymmetricKeyEncryption encrypt = new AsymmetricKeyEncryption();
+		encrypt.testIt("./data/poruke.xml",certificate,"./data/poruke.xml");
     }
 	
 	public static Messages loadMessages(String primalac) {
+		
+		String keyStoreFile = "./data/"+primalac+".jks";
+		String keyStorePass = primalac;
+		String keyStoreAlias = primalac;
+		String keyStorePassForPrivateKey = primalac;
+		
 		try {
 			DocumentBuilder builder=builderFactory.newDocumentBuilder();
 			Document document=builder.parse(new File("./data/poruke.xml"));
+			
+			AsymmetricKeyDecryption decrypt = new AsymmetricKeyDecryption();
+			
+			// ucitavanje KeyStore fajla
+    		KeyStore keyStore = keyStoreReader.readKeyStore(keyStoreFile, keyStorePass.toCharArray());
+			
+			// preuzimanje privatnog kljuca iz KeyStore-a za zeljeni alias
+    		PrivateKey privateKey = keyStoreReader.getPrivateKeyFromKeyStore(keyStore, keyStoreAlias, keyStorePassForPrivateKey.toCharArray());
+    		System.out.println("Procitan privatni kljuc: " + privateKey);
+			
+			document=decrypt.testIt("./data/poruke.xml",privateKey,"./data/poruke.xml");
+			
 			VerifySignatureEnveloped verify = new VerifySignatureEnveloped();
-			verify.testIt("./data/poruke.xml");
+			verify.testIt(document);
+			
 			Node node=document.getElementsByTagName("poruke").item(0);
 			Messages messages=Messages.loadFromDom(node,primalac);
 			System.out.println(messages);

@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?><poruke>
-<poruka posiljaoc="rakindejan@gmail.com" primalac="pantelijacappone@gmail.com"><subject>123</subject><body>123123123</body></poruka><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+<poruka posiljaoc="pantelijacappone@gmail.com" primalac="rakindejan@gmail.com"><xenc:EncryptedData xmlns:xenc="http://www.w3.org/2001/04/xmlenc#" Type="http://www.w3.org/2001/04/xmlenc#Content"><xenc:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#tripledes-cbc"/><ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+<ds:KeyName>Kriptovani tajni kljuc</ds:KeyName>
+<xenc:EncryptedKey xmlns:xenc="http://www.w3.org/2001/04/xmlenc#"><xenc:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-1_5"/><xenc:CipherData><xenc:CipherValue>Q/Pe6s3zEWkFuiLx2eQcnISlPB2jWUpi794lGU4dpl9M5mh5MSF6GHiOHEOIgQ5CZZQY8fh7ZYbc
+MhKCk087gJhS3zCEk7oXjRSnGPu8RfOurfn/Y45cuYcnsbgiAhoSzCYcl4+uXhdWjQeSiJHyH5bd
+WfEsuiTQvYbdkvzWf6z4eGJuhg/g23HBqxH9aZe44Haa2rMuAMRIhP1IdZsJNLv/KRwonMvo1Iz0
+03XVCY40n8WjjWOsGqMLRYNbN31vPGM97akiJBFDZecWWXOt+sHD0HIXLwmj89KHcjjdlAanpnJT
+o/PVZt+uiMmHtjSk0TMqGz9iR/XjT7BRbnqW4Q==</xenc:CipherValue></xenc:CipherData></xenc:EncryptedKey></ds:KeyInfo><xenc:CipherData><xenc:CipherValue>SOKC5RA4kB/rrNZzzfujVAMA65akmyTsLDQMjTohWChsgI8t+UWFuyEbEgp2WkS/qfLBTrQbnEw0
+xYWyX5G72ZWcA2XU5REg</xenc:CipherValue></xenc:CipherData></xenc:EncryptedData></poruka><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
 <ds:SignedInfo>
 <ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
 <ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
@@ -9,46 +16,46 @@
 <ds:Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments"/>
 </ds:Transforms>
 <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-<ds:DigestValue>ZpxxsMnqPH3DTlEX6wMxJJVAFQM=</ds:DigestValue>
+<ds:DigestValue>zu+jgxm/GAAcd4MuAcRg12gmWuU=</ds:DigestValue>
 </ds:Reference>
 </ds:SignedInfo>
 <ds:SignatureValue>
-K567Hm/F7C2fTE4lwUzxcjRKD/DZgZJWdFTlWXvjYo4kBMmlSPmyhbaMHCGD3WeyTcYdyLFRANSF
-lhIwRx/CllfDNxtl67qq3LCspA51I7JXYOTC3wLVcIuyFvYRAGpfbIqu51F4oPnJx1SmS6q6Ls+/
-6suuYSBF0BLzvogy1jsW6kciqnhY/j4eZelHEKHsZjZUkSBxyTR0NNabf58kx3pmGNd427ztWnlw
-ssb4HAAObPhUPZSl6jE+Bgei/YaHBUtnlc6rLdWhcDuuRBrXQ+Arv6wd2EY34679HrxZuAZWXQVH
-lJL9d1TU5J2I5+ISvj0abZ0QPAwA7fkWLYpoWQ==
+LCt7FVYXI6TZG7gnIpRbMza+UCFvJLSbREdHysh4rS9MEtKXtFOtJuXuVUs7uPWanxPvUt5wul2s
+ZnvF8m2A0HFjvAbg0yMDDxbe1V7KjeUs6tBKqoqFpK4lhwRGFbgFvG9sH04dTq6bdE0C4TT8YIT4
+VkQEd1YycbJ3diBzCjGvZsjwZiqH8F1W9ivKe5i+HujkHuG5fE7KNPu+QdGA8I84X50FpkAKAQKP
+Sy+2r2HqsEPnHdOPmkgpgyDlxLRXHUaZtS6ZdbX/nBLlzqbQQM7ps1pLJfg0VdCZ7bihFcQxhQc7
+r6PlpC+/G+469qxAQ0qqNwFPG+dEqToQrNL8Qg==
 </ds:SignatureValue>
 <ds:KeyInfo>
 <ds:KeyValue>
 <ds:RSAKeyValue>
 <ds:Modulus>
-ssSwn9XvxWzgOPS0hF9mKJrbIOnMO+2dkSksypWPVAHpIQbTi18kQFXHsS1JHCVsmWoXbCJ+HXj9
-UPeWetXiHEYunsNIfis/3Vn7SrHfTX0ThPYqbY5rv4KOm7fdJJKKM23wyKmMBkEO+tdit3W5h+CX
-LeyymYpxf0u2HcaH8Fl5MCislwR73aXbu5/akH9fRxUCLHNC4dNnFutMzMSJx7ZChmA/ALF7JTG3
-cX8v1+h40DYyNpLShHhil6+Z94v5RvZg3fEqZ+NR1dR9g0MuShBAwTm5XUkDTRGwZArmvsB7ojRd
-95m/0oAdSV132wioLjLOzjjUJHgf620yFdT7jQ==
+mchLVPh0ZLHUiB2FXOOnVdVlN+rLwVU1+zWbipXrIoar4VRl0A5xN+0xd76EQtOyKHxnIGMynk3t
+4g78S+vLUqzLS/TbgqqpafwpITWdVUHd8kd14CoxWE0f4p8t/ykkzvQc5hB3mOru9fWOmfE/QB3M
+Ia4KN1yWXVlhlnnOc7tPeQmqPwxJ7QhT9oEBbObYe8LZurJzWiPy83YRdWyFThYKY/ai9ko8nut0
+zWKXdr5R5tovg0PFEmfHCQIKfXSP3N1006Fl1tr1zShBMnLBUzbW/cdEA0pwEV7ldCQRJfVF5ba9
+v4KW2BnqQqbtYmkAmojhrCdKkHC3wCW86b96hw==
 </ds:Modulus>
 <ds:Exponent>AQAB</ds:Exponent>
 </ds:RSAKeyValue>
 </ds:KeyValue>
 <ds:X509Data>
 <ds:X509Certificate>
-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
+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
 </ds:X509Certificate>
 </ds:X509Data>
 </ds:KeyInfo>

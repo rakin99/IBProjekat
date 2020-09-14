@@ -32,9 +32,9 @@ import org.w3c.dom.NodeList;
 //Kriptuje tajni kljuc javnim kljucem
 //Kriptovani tajni kljuc se stavlja kao KeyInfo kriptovanog elementa
 public class AsymmetricKeyEncryption {
-	private static final String IN_FILE = "./data/univerzitet.xml";
-	private static final String OUT_FILE = "./data/univerzitet_enc2.xml";
-	private static final String KEY_STORE_FILE = "./data/primer.jks";
+	//private static final String IN_FILE = "./data/univerzitet.xml";
+	//private static final String OUT_FILE = "./data/univerzitet_enc2.xml";
+	//private static final String KEY_STORE_FILE = "./data/primer.jks";
 
 	static {
 		// staticka inicijalizacija
@@ -42,16 +42,16 @@ public class AsymmetricKeyEncryption {
 		org.apache.xml.security.Init.init();
 	}
 
-	public void testIt() {
+	public void testIt(String inFile, Certificate cert, String outFile) {
 		// ucitava se dokument
-		Document doc = loadDocument(IN_FILE);
+		Document doc = loadDocument(inFile);
 		
 		// generise tajni session kljuc
 		System.out.println("Generating secret key ....");
 		SecretKey secretKey = generateDataEncryptionKey();
 		
 		// ucitava sertifikat za kriptovanje tajnog kljuca
-		Certificate cert = readCertificate();
+		//Certificate cert = readCertificate();
 		
 		// kriptuje se dokument
 		System.out.println("Encrypting....");
@@ -59,7 +59,7 @@ public class AsymmetricKeyEncryption {
 		
 		// snima se tajni kljuc
 		// snima se dokument
-		saveDocument(doc, OUT_FILE);
+		saveDocument(doc, outFile);
 		
 		System.out.println("Encryption done");
 	}
@@ -84,25 +84,25 @@ public class AsymmetricKeyEncryption {
 	/**
 	 * Ucitava sertifikat is KS fajla alias primer
 	 */
-	private Certificate readCertificate() {
-		try {
-			// kreiramo instancu KeyStore
-			KeyStore ks = KeyStore.getInstance("JKS", "SUN");
-			// ucitavamo podatke
-			BufferedInputStream in = new BufferedInputStream(new FileInputStream(KEY_STORE_FILE));
-			ks.load(in, "primer".toCharArray());
-
-			if (ks.isKeyEntry("primer")) {
-				Certificate cert = ks.getCertificate("primer");
-				return cert;
-			} else
-				return null;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		} 
-	}
+//	private Certificate readCertificate() {
+//		try {
+//			// kreiramo instancu KeyStore
+//			KeyStore ks = KeyStore.getInstance("JKS", "SUN");
+//			// ucitavamo podatke
+//			BufferedInputStream in = new BufferedInputStream(new FileInputStream(KEY_STORE_FILE));
+//			ks.load(in, "primer".toCharArray());
+//
+//			if (ks.isKeyEntry("primer")) {
+//				Certificate cert = ks.getCertificate("primer");
+//				return cert;
+//			} else
+//				return null;
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return null;
+//		} 
+//	}
 
 	/**
 	 * Snima DOM u XML fajl
@@ -184,12 +184,12 @@ public class AsymmetricKeyEncryption {
 			encryptedData.setKeyInfo(keyInfo);
 
 			// trazi se element ciji sadrzaj se kriptuje
-			NodeList odseci = doc.getElementsByTagName("odsek");
-			Element odsek = (Element) odseci.item(0);
+			NodeList poruke = doc.getElementsByTagName("poruka");
+			Element poruka = (Element) poruke.item(0);
 			
 			
 
-			xmlCipher.doFinal(doc, doc.getDocumentElement(), true); // kriptuje sa sadrzaj
+			xmlCipher.doFinal(doc, poruka, true); // kriptuje sa sadrzaj
 
 			return doc;
 
@@ -199,8 +199,8 @@ public class AsymmetricKeyEncryption {
 		} 
 	}
 
-	public static void main(String[] args) {
-		AsymmetricKeyEncryption encrypt = new AsymmetricKeyEncryption();
-		encrypt.testIt();
-	}
+//	public static void main(String[] args) {
+//		AsymmetricKeyEncryption encrypt = new AsymmetricKeyEncryption();
+//		encrypt.testIt();
+//	}
 }
