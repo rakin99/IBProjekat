@@ -28,13 +28,14 @@ public class VerifySignatureEnveloped {
         org.apache.xml.security.Init.init();
     }
 	
-	public void testIt(Document doc) {
+	public boolean testIt(Document doc) {
 		//ucitava se dokument
 		//Document doc = loadDocument(inFile);
 		
 		//proverava potpis
 		boolean res = verifySignature(doc);
 		System.out.println("Verification = " + res);
+		return res;
 	}
 	
 	/**

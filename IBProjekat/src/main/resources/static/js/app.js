@@ -267,7 +267,7 @@ function getAllUsers() {
 						'<td>' + users[it].username + '</td>' + 
 						'<td>' + authoritiesString + '</td>' +
 						'<td>' + checked + '</td>' +
-						'<td> <a href="C:\Users\Dejan\git\IBProjekat\IBProjekat\data\test.jks" target="_blank">Download</a> </td>'+
+						//'<td> <a href="C:\Users\Dejan\git\IBProjekat\IBProjekat\data\rakindejan@gmail.com.jks""_blank">Download</a> </td>'+
 						'<td>' + '<button type="button" onclick="getCertificate(\''+ users[it].username +'\')" class="btn btn-primary">Download certificate</button>' + '</td>' +
 					'</tr>'
 							)	
@@ -357,8 +357,10 @@ function getMessages() {
 	    success: function(data)
 	    {
 	    	meessagesTable.find('tr:gt(1)').remove();
-	    	meessagesTable.show();
-			var messages = data;
+			meessagesTable.show();
+			console.log(data.messages.length)
+			var messages = data.messages;
+			var signature = data.signature;
 			if(messages.length===0){
 				$('#messagesForm').append('<h2>Nemate jos ni jednu poruku!</h2>');
 				meessagesTable.remove();
@@ -373,7 +375,11 @@ function getMessages() {
 								)	
 				}
 			}
-	    	
+			
+			if(signature === false && messages.length>0){
+				alert("-----Signature is invalid!-----");
+			}
+
 	    	console.log('Get Messages - Response:');
 	    	console.log(data);
 	    	console.log("===========================================================================");

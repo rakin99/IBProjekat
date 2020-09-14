@@ -10,6 +10,15 @@ import org.w3c.dom.NodeList;
 public class Messages {
 
 	private List<MessageDTO> messages=new ArrayList<MessageDTO>();
+	private boolean signature;
+
+	public boolean isSignature() {
+		return signature;
+	}
+
+	public void setSignature(boolean signature) {
+		this.signature = signature;
+	}
 
 	public List<MessageDTO> getMessages() {
 		return messages;

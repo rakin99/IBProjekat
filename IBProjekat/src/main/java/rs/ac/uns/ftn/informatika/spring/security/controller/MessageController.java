@@ -66,8 +66,8 @@ public class MessageController {
 	
 	@GetMapping("/message/all/{email}")
 	@PreAuthorize("hasRole('REGULAR')")
-	public List<MessageDTO> loadAllMessage(@PathVariable String email) throws InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchProviderException, IOException, MessagingException {
+	public Messages loadAllMessage(@PathVariable String email) throws InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchProviderException, IOException, MessagingException {
 		Messages messages = Util.loadMessages(email);
-		return messages.getMessages();
+		return messages;
 	}
 }

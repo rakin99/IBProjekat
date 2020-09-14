@@ -36,20 +36,26 @@ public class AsymmetricKeyDecryption {
 	}
 
 	public Document testIt(String inFile,PrivateKey pk,String outFile) {
-		// ucitava se dokument
-		Document doc = loadDocument(inFile);
+		
+		try {
+			// ucitava se dokument
+			Document doc = loadDocument(inFile);
 
-		// ucitava se privatni kljuc
-		//PrivateKey pk = readPrivateKey();
+			// ucitava se privatni kljuc
+			//PrivateKey pk = readPrivateKey();
 
-		// kriptuje se dokument
-		System.out.println("Decrypting....");
-		doc = decrypt(doc, pk);
+			// kriptuje se dokument
+			System.out.println("Decrypting....");
+			doc = decrypt(doc, pk);
 
-		// snima se dokument
-		//saveDocument(doc, outFile);
-		System.out.println("Encryption done");
-		return doc;
+			// snima se dokument
+			//saveDocument(doc, outFile);
+			System.out.println("Encryption done");
+			return doc;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**
@@ -142,8 +148,8 @@ public class AsymmetricKeyDecryption {
 			return doc;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
 		}
+		return null;
 	}
 
 //	public static void main(String[] args) {

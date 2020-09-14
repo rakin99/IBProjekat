@@ -37,8 +37,8 @@ import rs.ac.uns.ftn.informatika.spring.security.service.UserService;
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CertificateController {
 
-	private static final String KEY_STORE_FILE = "./data/test.jks";
-	private static final String KEY_STORE_PASS = "test10";
+	private static final String KEY_STORE_FILE = "./data/rakindejan@gmail.com.jks";
+	private static final String KEY_STORE_PASS = "rakindejan@gmail.com";
 	private static KeyStoreReader keyStoreReader = new KeyStoreReader();
 	private static KeyStoreWriter keyStoreWriter = new KeyStoreWriter();
 	
@@ -49,9 +49,12 @@ public class CertificateController {
 	@PreAuthorize("hasRole('REGULAR')")
 	public KeyStore loadJks(@PathVariable String email) throws KeyStoreException {
 		System.out.println("Get jks!");
-		User user=userService.findByEmail(email);
-		String alias="user"+user.getId();
-		KeyStore keyStore = keyStoreReader.readKeyStore(KEY_STORE_FILE, KEY_STORE_PASS.toCharArray());
+		
+		String keyStoreFile="./data/"+email+".jks";
+		String keyStorePass=email;
+		
+		String alias=email;
+		KeyStore keyStore = keyStoreReader.readKeyStore(keyStoreFile, keyStorePass.toCharArray());
 		Certificate certificate = keyStoreReader.getCertificateFromKeyStore(keyStore, alias);
 		PrivateKey privateKey = keyStoreReader.getPrivateKeyFromKeyStore(keyStore, alias, alias.toCharArray());
 		KeyStore keyStore2=keyStoreWriter.loadKeyStore(null, alias.toCharArray());
@@ -74,16 +77,20 @@ public class CertificateController {
 		System.out.println("Size: "+String.valueOf(keyStore.size()));
 		System.out.println("\nProcitani podaci o licu kojem je sertifikat izdat: " + subjectDataRead);
 		
-		return keyStore2;
+		return keyStore;
 	}
 	
 	@GetMapping("/certificate/{email}")
 	@PreAuthorize("hasRole('REGULAR')")
 	public String loadCertificate(@PathVariable String email) {
+		
+		String keyStoreFile=KEY_STORE_FILE;
+		String keyStorePass=KEY_STORE_PASS;
+		
 		System.out.println("Get certificate!");
 		User user=userService.findByEmail(email);
-		String alias="user"+user.getId();
-		KeyStore keyStore = keyStoreReader.readKeyStore(KEY_STORE_FILE, KEY_STORE_PASS.toCharArray());
+		String alias=email;
+		KeyStore keyStore = keyStoreReader.readKeyStore(keyStoreFile, keyStorePass.toCharArray());
 		Certificate certificate = keyStoreReader.getCertificateFromKeyStore(keyStore, alias);
 		
 		ObjectMapper myObjectMapper = new ObjectMapper();

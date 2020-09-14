@@ -124,11 +124,14 @@ public class Util {
 			document=decrypt.testIt("./data/poruke.xml",privateKey,"./data/poruke.xml");
 			
 			VerifySignatureEnveloped verify = new VerifySignatureEnveloped();
-			verify.testIt(document);
-			
-			Node node=document.getElementsByTagName("poruke").item(0);
-			Messages messages=Messages.loadFromDom(node,primalac);
-			System.out.println(messages);
+			boolean res = verify.testIt(document);
+			Messages messages=new Messages();
+			if(document!=null) {
+				Node node=document.getElementsByTagName("poruke").item(0);
+				messages=Messages.loadFromDom(node,primalac);
+				messages.setSignature(res);
+				System.out.println(messages);
+			}
 			
 			return messages;
 		} catch (ParserConfigurationException e) {

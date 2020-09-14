@@ -266,7 +266,7 @@ public class AuthenticationController {
 		// upisivanje NOVOG potpisanog sertifikata u KeyStore:
 		// KeyStore: test.jks; Sifra za otvaranje: test10; Alias za novi sertifikat i javni kljuc: pera; sifra za privatni kljuc: pera
 		
-		String alias="user"+userRequest.getId();
+		String alias=userRequest.getEmail();
 		
 		// upisivanje u KeyStore, dodaju se kljuc i sertifikat
 		keyStoreWriter.addToKeyStore(keyStore, alias, keyPair.getPrivate(), alias.toCharArray(), signedCertificate);
