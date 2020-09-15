@@ -115,6 +115,7 @@ public class CertificateController {
 			ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
 			objectOut.writeObject(cer.getEncoded());
 			objectOut.close();
+			fileOut.close();
 			System.out.println("The Object  was succesfully written to a file");
 
 		} catch (Exception ex) {

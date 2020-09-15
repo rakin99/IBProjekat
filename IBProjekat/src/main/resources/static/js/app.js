@@ -65,8 +65,8 @@ function register() {
 	
 	// kreiramo JavaScript objekat sa podacima koje je korisnik uneo u input polja
 	var user = {
-		'email' : "mika@gmail.com",
-		'password': "123"
+		'email' : $('#emailRegister').val(),
+		'password': $('#passwordRegister').val()
 	}
 	
 	// podatke na backend uvek saljemo kao JSON string
