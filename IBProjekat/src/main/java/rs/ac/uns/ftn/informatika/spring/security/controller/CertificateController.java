@@ -1,5 +1,8 @@
 package rs.ac.uns.ftn.informatika.spring.security.controller;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -53,8 +56,8 @@ public class CertificateController {
 	
 	@GetMapping("/jks/{email}")
 	@PreAuthorize("hasRole('REGULAR')")
-	public boolean loadJks(@PathVariable String email) throws KeyStoreException {
-		System.out.println("Get jks!");
+	public boolean loadJks(@PathVariable String email) throws KeyStoreException, FileNotFoundException {
+System.out.println("Get jks!");
 		
 		String keyStoreFile="./data/test.jks";
 		String keyStorePass="test10";
