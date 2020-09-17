@@ -302,7 +302,6 @@ function getCertificate(email){
 	    headers: {'Authorization': 'Bearer ' + localStorage.getItem('jwt')}, // saljemo token u Authorization header-u gde ga serverska strana ocekuje
 	    success: function(data)
 	    {
-			console.log(data);
 			var file = new File([data], email+".cer");
 			saveAs(file);
 	    }
@@ -324,8 +323,13 @@ function getJks(email){
 	    {
 			console.log("Usepsno su stigli podaci!");
 			console.log(data);
-			var file = new File([data], email+".jks");
-			saveAs(file);
+			if(data === true){
+				alert("You have successfully downloaded the file!");
+			}
+		},
+		error: function (error)
+	    {
+	    	console.log(error);
 	    }
 	});	
 
@@ -368,7 +372,7 @@ function getMessages() {
 				for (it in messages) {
 					meessagesTable.append(
 						'<tr>' +  
-							'<td>' + '<input readonly="false" type="email" class="form-control" value="'+ messages[it].emailAddress +'">' + '</td>' + 
+							'<td>' + '<input readonly="false" type="email" class="form-control" value="'+ messages[it].sender +'">' + '</td>' + 
 							'<td>' + '<input readonly="false" type="text" class="form-control" value="'+ messages[it].subject +'">' + '</td>' +
 							'<td>' + '<textarea readonly="false" class="form-control">'+ messages[it].content +'</textarea>' + '</td>' +
 						'</tr>'

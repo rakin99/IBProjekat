@@ -108,6 +108,8 @@ public class Util {
 		String keyStoreAlias = primalac;
 		String keyStorePassForPrivateKey = primalac;
 		
+		System.out.println("Primalac: "+primalac);
+		
 		try {
 			DocumentBuilder builder=builderFactory.newDocumentBuilder();
 			Document document=builder.parse(new File("./data/poruke.xml"));
